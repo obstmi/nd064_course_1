@@ -4,4 +4,6 @@
 .myvenv/
 __pycache__/
 .vagrant/
+# new files from the exercises:
 .DS_Store
+app.log

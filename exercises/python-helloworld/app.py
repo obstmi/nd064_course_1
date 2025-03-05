@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    app.logger.debug('Main request successfull')
+    app.logger.info('Main request successfull')
     return "Hello World!"
 
 @app.route('/status')
@@ -36,5 +36,8 @@ def metrics():
 if __name__ == "__main__":
     # Stream logs to a file, and set the default log level to DEBUG
     # => klappt nur, bei Start über 'python3 app.py', da die Logging-Instanz vor der Flask-Initialisierung gesetzt wird
-    logging.basicConfig(filename='app.log',level=logging.DEBUG)  
-    app.run(host='127.0.0.1') # anstatt host='0.0.0.0'
+    logging.basicConfig(filename='app.log',level=logging.DEBUG)
+    # Start mittels 'python3 app.py":
+    # app.run(host='0.0.0.0', port=9898)
+    # Start mittels 'flask run" oder über Docker:
+    app.run(host='0.0.0.0')
