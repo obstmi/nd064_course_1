@@ -5,12 +5,14 @@ ENV["TERM"]="linux"
 Vagrant.require_version ">= 2.2.10"
 Vagrant.configure("2") do |config|
   config.vm.provision "shell",
-    inline: "sudo su - && zypper update && zypper install -y apparmor-parser"
+    # change zypper to apt-get for Ubuntu
+    inline: "sudo apt-get update && sudo apt-get install -y apparmor"
 
   # Set the image for the vagrant box
-  config.vm.box = "opensuse/Leap-15.2.x86_64"
-  # Set the image version
-  config.vm.box_version = "15.2.31.632"
+
+  # Switch to another box, which works with ARM and VirtualBox:
+  config.vm.box = "bento/ubuntu-22.04"
+  config.vm.box_version = "202502.21.0"
 
   # Forward the ports from the guest VM to the local host machine
   config.vm.network "forwarded_port", guest: 8080, host: 8080
