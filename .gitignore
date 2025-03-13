@@ -7,3 +7,5 @@ __pycache__/
 # new files from the exercises:
 .DS_Store
 app.log
+database.db
+
