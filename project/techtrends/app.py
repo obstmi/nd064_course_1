@@ -1,5 +1,6 @@
-import sqlite3
+import sqlite3, logging, sys
 
+from datetime import datetime
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
 
@@ -30,9 +31,24 @@ def get_post(post_id):
     connection.close()
     return post
 
+# Function to get the current timestamp with format: DD/Mon/YYYY HH:MM:SS
+def get_timestamp():
+    return datetime.now().strftime('%d/%b/%Y %H:%M:%S')
+
+# Function to log a message at given level with a timestamp, default level is INFO
+def log_message(level, message):
+    log_level = getattr(logging, level.upper(), logging.INFO)
+    app.logger.log(log_level, f' - - [{get_timestamp()}] {message}')
+
 # Define the Flask application
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
+
+# Set Logging to stdout and loglevel to DEBUG
+logging.basicConfig(
+    handlers=[logging.StreamHandler(sys.stdout)],
+    level=logging.DEBUG
+)
 
 # Define the main route of the web application 
 @app.route('/')
@@ -48,13 +64,16 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-      return render_template('404.html'), 404
+        log_message('INFO', f'Non existing article accessed! 404 page returned.')
+        return render_template('404.html'), 404
     else:
-      return render_template('post.html', post=post)
+        log_message('INFO', f'Article "{post["title"]}" retrieved!')
+        return render_template('post.html', post=post)
 
 # Define the About Us page
 @app.route('/about')
 def about():
+    log_message('INFO', f'About Us page retrieved!')
     return render_template('about.html')
 
 # Define the post creation functionality 
@@ -72,6 +91,8 @@ def create():
                          (title, content))
             connection.commit()
             connection.close()
+
+            log_message('INFO', f'New Article with title: "{title}" created!')
 
             return redirect(url_for('index'))
 
